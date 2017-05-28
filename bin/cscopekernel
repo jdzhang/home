@@ -1,0 +1,38 @@
+#!/bin/sh
+# to be called from top level kernel directory
+
+FILEDIR=$PWD
+
+# find files in $LNX, excluding certain directories
+cscope_kernel_dir()
+{
+    cd /
+# including drivers, to skip, uncomment the following line and past into find parameters.
+#	-path "$LNX/drivers*" -prune -o                                       \
+    find  $LNX                                                                \
+  	-path "$LNX/arch/*" ! -path "$LNX/arch/x86*" -prune -o                \
+        -path "$LNX/tools/*" -prune -o                                        \
+	-path "$LNX/tmp*" -prune -o                                           \
+	-path "$LNX/Documentation*" -prune -o                                 \
+	-path "$LNX/scripts*" -prune -o                                       \
+        \(                                                                    \
+           -name "*.[chxsS]" -o -name "Makefile" -o -name "Kconfig"           \
+        \)                                                                    \
+        -type f                                                               \
+        -print > $LNX/cscope.files
+
+    cd $LNX
+
+    echo "building cscope db ...."
+    cscope -b -q -k
+}
+
+# stock kernel, or a single copy - invoked in kernel directory
+LNX=$FILEDIR
+#if [ -d $LNX/kernel ]; then
+    echo "finding kernel files in current directory..."
+    cscope_kernel_dir
+#fi
+
+cd $FILEDIR
+

@@ -1,0 +1,14 @@
+#!/bin/sh
+
+echo "finding source files...."
+find . \
+     -path "*/Build/*" -prune -o \
+     -type f \
+     \( -name "*.[ch]" -o -name "*.cc" -o -name "*.py" -o -name "*.proto" -o -name "*.json" -o -name "*.mk" -o -name "Makefile" \) -print > cscope.files 
+
+echo "building cscope db..."
+cscope -b -q
+
+echo "done."
+
+
